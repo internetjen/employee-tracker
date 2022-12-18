@@ -21,3 +21,28 @@ connection.query(
   );
 
   
+  // Prompt 
+  inquirer
+  .prompt([
+    {
+      type: 'list',
+      name: 'viewing option',
+      choices: [
+        'view all departments', 
+        'view all roles',
+        'view all employees',
+        'add a department',
+        'add a role', 
+        'add an employee', 
+        'update an employee role'
+      ],
+    }
+  ])
+
+  .then((answers) => {
+    const htmlPageContent = generateHTML(answers);
+
+    fs.writeFile('index.html', htmlPageContent, (err) =>
+      err ? console.log(err) : console.log('Successfully created index.html!')
+    );
+  });
