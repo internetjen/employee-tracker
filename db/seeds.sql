@@ -1,15 +1,25 @@
-INSERT INTO book_prices (price)
-VALUES (1),
-       (2),
-       (5),
-       (10),
-       (15);
+INSERT INTO department (id, name)
+VALUES  (1, "Sales"),
+        (2, "Engineering"),
+        (3, "Finance"),
+        (4, "Legal"),
 
-INSERT INTO favorite_books (book_name, in_stock, book_price)
-VALUES ("The Great Gatsby", true, 1),
-       ("Huckleberry Finn", true, 3),
-       ("100 Years of Solitude", false, 5),
-       ("Things Fall Apart", false, 1),
-       ("Crime and Punishment", true, 2),
-       ("Moby Dick", true, 4),
-       ("Decameron", false, 1);
+INSERT INTO role (id, title, salary, department_id)
+VALUES  (1, "Sales Lead",100000, 1),
+        (2, "Salesperson", 80000, 1),
+        (3, "Lead Engineer", 150000, 2),
+        (4, "Software Engineer", 120000, 2),
+        (5, "Account Manager", 160000, 1),
+        (6, "Accountant", 125000, 3),
+        (7, "Legal Team Lead", 250000, 4),
+        (8, "Lawyer", 190000, 4);
+
+INSERT INTO employee (id, first_name, last_name, role_id, manager_id)
+VALUES  (1, "John", "Doe", 1),
+        (2, "Mike", "Chan", 2, 1),
+        (3, "Ashley", "Rodriguez", 3),
+        (4, "Kevin", "Tupik", 4, 3),
+        (5, "Kunal", "Singh", 5),
+        (6, "Malia", "Brown", 6, 5),
+        (7, "Sarah", "Lourd", 7),
+        (8, "Tom", "Allen", 8, 7);
