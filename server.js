@@ -16,11 +16,13 @@ const db = mysql.createConnection(
   {
     host: 'localhost',
     // MySQL username,
-    user: 'root',
+    user: process.env.DB_USER,
     // MySQL password
-    database: 'employee_db'
+    password: process.env.DB_PASSWORD,
+  
+    database: 'company_db'
   },
-  console.log(`Connected to the employee_db database.`)
+  console.log(`Connected to the company_db database.`)
 );
 
 // Connect to database
@@ -31,7 +33,7 @@ db.connect((err) => {
 });
 
 // Query database
-db.query('SELECT * FROM employee_db', function (err, results) {
+db.query('SELECT * FROM company_db', function (err, results) {
   console.log(results);
 });
 
