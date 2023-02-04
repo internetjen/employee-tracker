@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/internetjen/employee-tracker#readme",
   "dependencies": {
-    "chalk": "^5.2.0",
+    "chalk": "^4.1.2",
     "console.table": "^0.10.0",
     "inquirer": "^8.2.5",
     "mysql2": "^3.1.0"
