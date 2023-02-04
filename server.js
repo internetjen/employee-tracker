@@ -1,70 +1,33 @@
 // Required packages/libs
 const Inquirer = require('inquirer');
 const cTable = require('console.table');
-const mysql = require('mysql2');
-const express = require('express');
+const chalk = require('chalk');
+const db = require('./config/connection')
 
-const PORT = process.env.PORT || 3001;
-const app = express();
+// Prompts user
+const promptUser = () => {
+  Inquirer
+    .prompt([
+    {
+       type: 'list',
+       message: 'What would you like to do?',
+       name: 'choice',
+       choices: [
+        'view all departments', 
+        'view all roles',
+        'view all employees',
+        'add a department',
+        'add a role', 
+        'add an employee', 
+        'update an employee role'
+      ]
+    }
+  ])
 
-// Express middleware
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+  .then(answers => {
+    //switch statements for each choise
 
-// Create connection to database
-const db = mysql.createConnection(
-  {
-    host: 'localhost',
-    // MySQL username,
-    user: process.env.DB_USER,
-    // MySQL password
-    password: process.env.DB_PASSWORD,
-  
-    database: 'company_db'
-  },
-  console.log(`Connected to the company_db database.`)
-);
 
-// Connect to database
-db.connect((err) => {
-  if (err){
-    throw err;
-  } console.log('MySql Connected!');
-});
+  })
 
-// Query database
-db.query('SELECT * FROM company_db', function (err, results) {
-  console.log(results);
-});
-
-  // Default response for any other request (Not Found)
-app.use((req, res) => {
-  res.status(404).end();
-});
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-  
-  // // Prompts user
-  // Inquirer
-  // .prompt([
-  //   {
-  //     type: 'list',
-  //     message: 'What would you like to do?',
-  //     name: 'chooseOption',
-  //     choices: [
-  //       'view all departments', 
-  //       'view all roles',
-  //       'view all employees',
-  //       'add a department',
-  //       'add a role', 
-  //       'add an employee', 
-  //       'update an employee role'
-  //     ],
-  //   }
-  // ])
-
-  // .then(answers => {
-  //   console.info('Answer:', answers.chooseOption);
-  // });
+}  
