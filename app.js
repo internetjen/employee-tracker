@@ -10,7 +10,7 @@ db.connect(error => {
   console.error(error);
   return;
   }
-  console.log('Connected to company_db database');
+  console.log('Connected to company_db database! Initializing prompt...');
   promptUser();
   });
 
@@ -36,8 +36,8 @@ const promptUser = () => {
     ])
 
     .then(answers => {
-      //switch statements for each choise
-      switch (answers) {
+      //switch statements for each choice
+      switch (answers.choice) {
         case 'View All Departments':
           viewDepartments();
           break;
@@ -69,11 +69,33 @@ const promptUser = () => {
     });
 };
 
-// function to view departments
+// function to view all departments
 const viewDepartments = () => {
   db.query("SELECT * FROM department", (err, res) => {
     if (err) throw err;
     console.table(res);
   });
 };
+
+// function to view all roles
+const viewRoles = () => {
+  db.query("SELECT * FROM role", (err, res) => {
+    if (err) throw err;
+    console.table(res);
+  });
+};
+
+// function to view all employees
+const viewEmployees = () => {
+  db.query("SELECT * FROM employee", (err, res) => {
+    if (err) throw err;
+    console.table(res);
+  });
+};
+
+// function to add a department
+// function to add a role
+// function to add an employee
+
+//// update an employee role
 
