@@ -165,15 +165,65 @@ const addRole = () => {
     });
     };
 
-  
 
 // function to add an employee
-// const addEmployee = () => {
-//   db.query("SELECT * FROM employee", (err, res) => {
-//     if (err) throw err;
-//     console.table(res);
-//   });
-// };
+const addEmployee = () => {
+  Inquirer
+  .prompt([
+    {
+      type: 'input',
+      message: 'What is their first name?',
+      name: 'employeeName'
+    },
+    {
+      type: 'input',
+      message: 'What is their last name?',
+      name: 'employeeLastName'
+    },
+    {
+      type: 'list',
+      message: 'What is their role?',
+      name: 'employeeRole', 
+      choices: [
+        'Sales Lead',
+        'Salesperson',
+        'Lead Engineer',
+        'Software Engineer',
+        'Account Manager',
+        'Accountant',
+        'Legal Team Lead',
+        'Lawyer'
+      ]
+    },
+    {
+      type: 'input',
+      message: 'Who is their manager (type manager ID or NULL if no manager)?',
+      name: 'employeeManager'
+    },
+  ])
 
-//// update an employee role
+  .then(answers => {
+    const employeeName = answers.employeeName;
+    const employeeLastName = answers.employeeLastName;
+    const employeeRole = answers.employeeRole;
+    const employeeManager = answers.employeeManager;
+  
+    //gets role id of the role chosen by user
+    db.query(`SELECT id FROM role WHERE title = '${employeeRole}'`, (err, res) => {
+      if (err) throw err;
+      const roleId = res[0].id;
+  
+      //query which inserts employee  
+      db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${employeeName}', '${employeeLastName}', '${roleId}', '${employeeManager}')`, (err, res) => {
+        if (err) throw err;
+        console.log(`Congrats! You have added a new employee called ${employeeName} ${employeeLastName} in the ${employeeRole} role.`);
+  
+        //query which then shows all depts with update
+        viewEmployees();
+      });
+    });
+  });
+};
+
+// update an employee role
 
