@@ -10,7 +10,11 @@ db.connect(error => {
   console.error(error);
   return;
   }
-  console.log(chalk.bgMagenta('Connected to database! Initializing prompt...'));
+  console.log(chalk.bgCyan('                                                 '));
+  console.log(chalk.bgCyan('- - - - - - - - - - - - - - - - - - - - - - - - -'));
+  console.log(chalk.bgCyan.bold('  Connected to database! Initializing prompt...  '));
+  console.log(chalk.bgCyan('- - - - - - - - - - - - - - - - - - - - - - - - -'));
+  console.log(chalk.bgCyan('                                                 '));
   promptUser();
   });
 
@@ -66,6 +70,7 @@ const promptUser = () => {
           addEmployeeRole();
           break;
       }
+
     });
 };
 
@@ -73,7 +78,12 @@ const promptUser = () => {
 const viewDepartments = () => {
   db.query("SELECT * FROM department", (err, res) => {
     if (err) throw err;
+    console.log(chalk.bgMagenta('                           '));
+    console.log(chalk.bgMagenta.underline.italic('      All Departments      '));
+    console.log(chalk.bgMagenta('                           '));
     console.table(res);
+    //once done, prompts user again 
+    promptUser();
   });
 };
 
@@ -81,7 +91,12 @@ const viewDepartments = () => {
 const viewRoles = () => {
   db.query("SELECT * FROM role", (err, res) => {
     if (err) throw err;
+    console.log(chalk.bgMagenta('                           '));
+    console.log(chalk.bgMagenta.underline.italic('         All Roles         '));
+    console.log(chalk.bgMagenta('                           '));
     console.table(res);
+    //once done, prompts user again 
+    promptUser();
   });
 };
 
@@ -89,7 +104,12 @@ const viewRoles = () => {
 const viewEmployees = () => {
   db.query("SELECT * FROM employee", (err, res) => {
     if (err) throw err;
+    console.log(chalk.bgMagenta('                         '));
+    console.log(chalk.bgMagenta.underline.italic('      All Employees      '));
+    console.log(chalk.bgMagenta('                         '));
     console.table(res);
+    //once done, prompts user again 
+    promptUser();
   });
 };
 
@@ -109,7 +129,7 @@ const addDepartment = () => {
       //query which inserts department  
       db.query(`INSERT INTO department (name) VALUES ('${departmentName}')`, (err, res) => {
       if (err) throw err;
-      console.log(`Congrats! You have added a new department called ${departmentName}.`);
+      console.log(chalk.bgCyan(`Congrats! You have added a new department called ${departmentName}.`));
       });
       //query which then shows all depts with update
       viewDepartments();
@@ -156,12 +176,12 @@ const addRole = () => {
         //query which inserts department  
         db.query(`INSERT INTO role (title, salary, department_id) VALUES ('${roleName}', '${roleSalary}', '${departmentId}')`, (err, res) => {
           if (err) throw err;
-          console.log(`Congrats! You have added a new role called ${roleName} with the salary of $${roleSalary} in the ${roleDepartment} department.`);
-    
+          console.log(chalk.bgCyan(`Congrats! You have added a new role called ${roleName} with the salary of $${roleSalary} in the ${roleDepartment} department.`));
           //query which then shows all depts with update
           viewRoles();
         });
       });
+      
     });
     };
 
@@ -206,7 +226,6 @@ const addEmployee = () => {
     const employeeName = answers.employeeName;
     const employeeLastName = answers.employeeLastName;
     const employeeRole = answers.employeeRole;
-    const employeeManager = answers.employeeManager;
   
     //gets role id of the role chosen by user
     db.query(`SELECT id FROM role WHERE title = '${employeeRole}'`, (err, res) => {
@@ -214,9 +233,9 @@ const addEmployee = () => {
       const roleId = res[0].id;
   
       //query which inserts employee  
-      db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${employeeName}', '${employeeLastName}', '${roleId}', '${employeeManager}')`, (err, res) => {
+      db.query(`INSERT INTO employee (first_name, last_name, role_id) VALUES ('${employeeName}', '${employeeLastName}', '${roleId}')`, (err, res) => {
         if (err) throw err;
-        console.log(`Congrats! You have added a new employee called ${employeeName} ${employeeLastName} in the ${employeeRole} role.`);
+        console.log(chalk.bgCyan(`Congrats! You have added a new employee called ${employeeName} ${employeeLastName} in the ${employeeRole} role.`));
   
         //query which then shows all depts with update
         viewEmployees();
