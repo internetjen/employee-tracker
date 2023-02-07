@@ -10,11 +10,11 @@ db.connect(error => {
   console.error(error);
   return;
   }
-  console.log(chalk.bgCyan('                                                 '));
-  console.log(chalk.bgCyan('- - - - - - - - - - - - - - - - - - - - - - - - -'));
-  console.log(chalk.bgCyan.bold('  Connected to database! Initializing prompt...  '));
-  console.log(chalk.bgCyan('- - - - - - - - - - - - - - - - - - - - - - - - -'));
-  console.log(chalk.bgCyan('                                                 '));
+  console.log(chalk.bgCyan.bold('- - - - - - - - - - - - - - - - - - - - - - - - -'));
+  console.log(chalk.bgCyan.bold('- - - - - - - - - - - - - - - - - - - - - - - - -'));
+  console.log(chalk.bgCyan.bold('- - - - - - -   EMPLOYEE MANAGER  - - - - - - - -'));
+  console.log(chalk.bgCyan.bold('- - - - - - - - - - - - - - - - - - - - - - - - -'));
+  console.log(chalk.bgCyan.bold('- - - - - - - - - - - - - - - - - - - - - - - - -'));
   promptUser();
   });
 
@@ -81,9 +81,9 @@ const promptUser = () => {
 const viewDepartments = () => {
   db.query(`SELECT * FROM department`, (err, res) => {
     if (err) throw err;
-    console.log(chalk.bgMagenta('                           '));
-    console.log(chalk.bgMagenta.underline.italic('      All Departments      '));
-    console.log(chalk.bgMagenta('                           '));
+    console.log(chalk.bgWhite('                           '));
+    console.log(chalk.cyan.bgWhite.bold.italic('      All Departments      '));
+    console.log(chalk.bgWhite('                           '));
     console.table(res);
     //once done, prompts user again 
     promptUser();
@@ -96,9 +96,9 @@ const viewDepartments = () => {
 const viewRoles = () => {
   db.query(`SELECT role.id, role.title, role.salary, department.department_name FROM role JOIN department ON role.department_id = department.id`, (err, res) => {
     if (err) throw err;
-    console.log(chalk.bgMagenta('                           '));
-    console.log(chalk.bgMagenta.underline.italic('         All Roles         '));
-    console.log(chalk.bgMagenta('                           '));
+    console.log(chalk.bgWhite('                           '));
+    console.log(chalk.cyan.bgWhite.bold.italic('         All Roles         '));
+    console.log(chalk.bgWhite('                           '));
     console.table(res);
     //once done, prompts user again 
     promptUser();
@@ -111,9 +111,9 @@ const viewRoles = () => {
 const viewEmployees = () => {
   db.query(`SELECT employee.id, employee.first_name, employee.last_name, role.title, department.department_name, role.salary, manager.first_name || ' ' || manager.last_name AS 'Manager' FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id LEFT JOIN employee AS manager ON employee.manager_id = manager.id`, (err, res) => {
     if (err) throw err; 
-    console.log(chalk.bgMagenta('                         '));
-    console.log(chalk.bgMagenta.underline.italic('      All Employees      '));
-    console.log(chalk.bgMagenta('                         '));
+    console.log(chalk.bgWhite('                         '));
+    console.log(chalk.cyan.bgWhite.bold.italic('      All Employees      '));
+    console.log(chalk.bgWhite('                         '));
     console.table(res);
     //once done, prompts user again 
     promptUser();
@@ -149,18 +149,19 @@ const addDepartment = () => {
 //THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
 // function to add a role
 const addRole = () => {
-  Inquirer
+  //Gets all current departments available
+  db.query(`SELECT department_name FROM department`, (err, res) => {
+    if (err) throw err;
+
+    const departmentChoices = res.map(department => department.department_name);
+    
+    Inquirer
     .prompt([
       {
         type: 'list',
         message: 'What department is this role in?',
         name: 'roleDepartment', 
-        choices: [
-          'Sales', 
-          'Engineering',
-          'Finance',
-          'Legal'
-        ]
+        choices: departmentChoices
       },
       {
         type: 'input',
@@ -193,13 +194,20 @@ const addRole = () => {
         });
       });
     });
-    };
+  });
+};
 
 
 //WHEN I choose to add an employee
 //THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
 // function to add an employee
 const addEmployee = () => {
+
+  db.query(`SELECT title FROM role`, (err, res) => {
+    if (err) throw err;
+
+    const roleChoices = res.map(role => role.title);
+
   Inquirer
   .prompt([
     {
@@ -216,15 +224,7 @@ const addEmployee = () => {
       type: 'list',
       message: 'What is their role?',
       name: 'employeeRole', 
-      choices: [
-        'Sales Lead',
-        'Salesperson',
-        'Lead Engineer',
-        'Software Engineer',
-        'Account Manager',
-        'Accountant',
-        'Legal Team Lead',
-        'Lawyer']
+      choices: roleChoices
     },
     {
       type: 'input',
@@ -253,6 +253,7 @@ const addEmployee = () => {
       });
     });
   });
+});
 };
 
 //WHEN I choose to update an employee role
