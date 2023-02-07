@@ -261,7 +261,7 @@ const addEmployee = () => {
 // function to update an employee
 const addEmployeeRole = () => {
   //Getting all employees
-  db.query(`SELECT id, first_name || ' ' || last_name AS name FROM employee`, (err, employees) => {
+  db.query(`SELECT id, first_name, last_name FROM employee`, (err, employees) => {
     if (err) throw err;
   
   //Promts user to choose from current employees
@@ -272,7 +272,7 @@ const addEmployeeRole = () => {
       message: 'Which employee would you like to update?',
       name: 'employee', 
       choices: employees.map(employee => {
-        return {name: employee.name, value: employee.id};
+        return { name: `${employee.first_name} ${employee.last_name}`, value: employee.id };
       })
     }
   ])
@@ -284,7 +284,7 @@ const addEmployeeRole = () => {
     db.query(`SELECT id, title FROM role`,(err, roles) => {
       if (err) throw err;
 
-      //Promts user to choose from current roles or add new
+      //Promts user to choose from current roles
       Inquirer
       .prompt([
         {
