@@ -60,7 +60,7 @@
 
   ### Walk-through Video
   To see all of these in action, take a look at this video.
-  [Link](https://user-images.githubusercontent.com/108141392/217382138-f5c87117-280d-4d53-9825-b650570677f0.mov)
+  ![Walk-through video](https://user-images.githubusercontent.com/108141392/217382138-f5c87117-280d-4d53-9825-b650570677f0.mov)
 
   ## License
   N/A
