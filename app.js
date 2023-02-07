@@ -74,9 +74,12 @@ const promptUser = () => {
     });
 };
 
+
+// WHEN I choose to view all departments
+// THEN I am presented with a formatted table showing department names and department ids
 // function to view all departments
 const viewDepartments = () => {
-  db.query("SELECT * FROM department", (err, res) => {
+  db.query(`SELECT * FROM department`, (err, res) => {
     if (err) throw err;
     console.log(chalk.bgMagenta('                           '));
     console.log(chalk.bgMagenta.underline.italic('      All Departments      '));
@@ -87,9 +90,11 @@ const viewDepartments = () => {
   });
 };
 
+//WHEN I choose to view all roles
+//THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
 // function to view all roles
 const viewRoles = () => {
-  db.query("SELECT * FROM role", (err, res) => {
+  db.query(`SELECT role.id, role.title, role.salary, department.department_name FROM role JOIN department ON role.department_id = department.id`, (err, res) => {
     if (err) throw err;
     console.log(chalk.bgMagenta('                           '));
     console.log(chalk.bgMagenta.underline.italic('         All Roles         '));
@@ -100,10 +105,12 @@ const viewRoles = () => {
   });
 };
 
+//WHEN I choose to view all employees
+//THEN I am presented with the employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
 // function to view all employees
 const viewEmployees = () => {
-  db.query("SELECT * FROM employee", (err, res) => {
-    if (err) throw err;
+  db.query(`SELECT employee.id, employee.first_name, employee.last_name, role.title, department.department_name, role.salary, manager.first_name || ' ' || manager.last_name AS 'Manager' FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id LEFT JOIN employee AS manager ON employee.manager_id = manager.id`, (err, res) => {
+    if (err) throw err; 
     console.log(chalk.bgMagenta('                         '));
     console.log(chalk.bgMagenta.underline.italic('      All Employees      '));
     console.log(chalk.bgMagenta('                         '));
@@ -113,6 +120,8 @@ const viewEmployees = () => {
   });
 };
 
+//WHEN I choose to add a department
+//THEN I am prompted to enter the name of the department and that department is added to the database
 // function to add a department
 const addDepartment = () => {
   Inquirer
@@ -127,7 +136,7 @@ const addDepartment = () => {
     .then(answers => {
       const departmentName = answers.departmentName;
       //query which inserts department  
-      db.query(`INSERT INTO department (name) VALUES ('${departmentName}')`, (err, res) => {
+      db.query(`INSERT INTO department (department_name) VALUES ('${departmentName}')`, (err, res) => {
       if (err) throw err;
       console.log(chalk.bgCyan(`Congrats! You have added a new department called ${departmentName}.`));
       });
@@ -136,6 +145,8 @@ const addDepartment = () => {
     });
 };
 
+//WHEN I choose to add a role
+//THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
 // function to add a role
 const addRole = () => {
   Inquirer
@@ -169,7 +180,7 @@ const addRole = () => {
       const roleDepartment = answers.roleDepartment;
     
       //gets department id of the department chosen by user
-      db.query(`SELECT id FROM department WHERE name = '${roleDepartment}'`, (err, res) => {
+      db.query(`SELECT id FROM department WHERE department_name = '${roleDepartment}'`, (err, res) => {
         if (err) throw err;
         const departmentId = res[0].id;
     
@@ -181,11 +192,12 @@ const addRole = () => {
           viewRoles();
         });
       });
-      
     });
     };
 
 
+//WHEN I choose to add an employee
+//THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
 // function to add an employee
 const addEmployee = () => {
   Inquirer
@@ -212,8 +224,7 @@ const addEmployee = () => {
         'Account Manager',
         'Accountant',
         'Legal Team Lead',
-        'Lawyer'
-      ]
+        'Lawyer']
     },
     {
       type: 'input',
@@ -244,5 +255,59 @@ const addEmployee = () => {
   });
 };
 
-// update an employee role
+//WHEN I choose to update an employee role
+//THEN I am prompted to select an employee to update and their new role and this information is updated in the database
+// function to update an employee
+const addEmployeeRole = () => {
+  //Getting all employees
+  db.query(`SELECT id, first_name || ' ' || last_name AS name FROM employee`, (err, employees) => {
+    if (err) throw err;
+  
+  //Promts user to choose from current employees
+  Inquirer
+  .prompt([
+    {
+      type: 'list',
+      message: 'Which employee would you like to update?',
+      name: 'employee', 
+      choices: employees.map(employee => {
+        return {name: employee.name, value: employee.id};
+      })
+    }
+  ])
 
+  .then(employeeAnswer => {
+    const employeeId = employeeAnswer.employee;
+
+    //Get all roles
+    db.query(`SELECT id, title FROM role`,(err, roles) => {
+      if (err) throw err;
+
+      //Promts user to choose from current roles or add new
+      Inquirer
+      .prompt([
+        {
+          type: 'list',
+          message: 'What is the new role for the selected employee?',
+          name: 'role',
+          choices: roles.map(role => {
+            return { name: role.title, value: role.id }
+          })
+        }
+      ])
+
+      .then(roleAnswer => {
+        const roleId = roleAnswer.role;
+
+        //Updates emloyee role
+        db.query(`UPDATE employee SET role_id = ? WHERE id = ?`, [roleId, employeeId], (err, res) => {
+          if (err) throw err;
+          console.log(chalk.bgCyan(`Congrats! You have updated the employee role!`));
+          //once done, prompts user again
+          viewEmployees();
+        });
+      });
+    });
+  });
+});
+};
